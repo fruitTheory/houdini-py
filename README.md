@@ -1,4 +1,7 @@
-A repo for storing houdini scripts - currently contains a kitbash to solaris setup. 
+A repo for storing houdini scripts - currently: 
+- Kitbash  to Solaris 
+- Texture to MaterialX importer
+- Megascans toolset
 
 ---
 ### Running from shelf button  

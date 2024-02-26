@@ -15,6 +15,7 @@ class KitConvert:
 
         # Convert any kitbash nodes detected 
         for kitbash_name in filter_kitbash_nodes:
+            
             nodes = self.convert(str(kitbash_name))                
             
     # Convert provided kit name from Obj to Solaris
