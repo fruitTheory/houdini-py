@@ -57,7 +57,6 @@ class KitConvert:
             if prim.GetTypeName() == 'Scope':
                 Materials = prim.GetChildrenNames()
 
-
         # Store each split object into filter geom
         filter_geom = []
         [filter_geom.append(object.split('_')[-1]) for object in GeomSubsets]
