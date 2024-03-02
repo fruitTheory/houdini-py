@@ -1,7 +1,10 @@
 A repo for storing houdini scripts - currently: 
 - Kitbash  to Solaris 
-- Texture to MaterialX importer
+- Textures to MaterialX
 - Megascans toolset
+- Colorspace converter
+- Node class wrapper
+
 
 ---
 ### Running from shelf button  
