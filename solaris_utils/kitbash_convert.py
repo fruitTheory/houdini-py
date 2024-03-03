@@ -9,17 +9,16 @@ class KitConvert:
     obj = hou.node('/obj')
 
     # Method to convert all avaialable kits
-    def convertAll(self):
+    def convertAll(self) -> None:
         # Filter for kitbash nodes in obj - use later
         filter_kitbash_nodes = [child for child in self.obj.children() if child.name().startswith('KB3D')]
 
         # Convert any kitbash nodes detected 
         for kitbash_name in filter_kitbash_nodes:
-            
             nodes = self.convert(str(kitbash_name))                
             
     # Convert provided kit name from Obj to Solaris
-    def convert(self, name):
+    def convert(self, name) -> tuple[str, str, str]:
 
         kitname = name
 
@@ -75,7 +74,7 @@ class KitConvert:
 
 
     # Create and wire needed nodes, returns tuple of nodes
-    def create_nodes(self, kitname):
+    def create_nodes(self, kitname) -> tuple[str, str, str]:
 
         nodes_to_create = ('sopimport', 'materiallibrary', 'assignmaterial')
         node_names = ('import', 'matlib', 'assign')
@@ -106,7 +105,7 @@ class KitConvert:
         return created_nodes
 
     # Returns node that contains materials for specified kitbash
-    def get_kitbash_matnet(self, kitname):
+    def get_kitbash_matnet(self, kitname) -> any:
         # find the matnet
         for node in self.obj.children():
             if node.name() == kitname:
@@ -115,7 +114,7 @@ class KitConvert:
         return kitbash_matnet
 
     # Return string that is name of kitbash geo
-    def get_kitgeo_name(self, kitname):
+    def get_kitgeo_name(self, kitname) -> str:
         kit = self.obj.node(kitname)
         kit_nodes = kit.children()
 
@@ -129,6 +128,6 @@ class KitConvert:
         return geo_name
 
     # Delete provided nodes
-    def delete_nodes(self, nodes):
+    def delete_nodes(self, nodes) -> None:
         for node in nodes:
             node.destroy()
