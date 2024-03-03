@@ -1,7 +1,7 @@
 import hou
 import os
 
-from solaris_utils import file_selector as fs
+from solaris_utils.ui import file_selector as fs
 from importlib import reload
 reload(fs)
 

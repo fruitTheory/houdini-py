@@ -17,7 +17,7 @@ class FileSelector(QtWidgets.QWidget):
 
         # Get current file path and ui file in same area
         current_dir = os.path.dirname(__file__)
-        ui_filename = 'ui/file_importer.ui'
+        ui_filename = 'file_selector.ui'
         ui_file = os.path.join(current_dir, ui_filename)
 
         # Pull ui file and set parent to houdini's window

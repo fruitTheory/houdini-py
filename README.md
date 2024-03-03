@@ -1,12 +1,18 @@
+Houdini
+---
 A repo for storing houdini scripts - currently: 
 - Kitbash  to Solaris 
 - Textures to MaterialX
 - Megascans toolset
 - Colorspace converter
+
+### Utility 
+
+- Generalized ui Class
 - Node class wrapper
 
-
 ---
+
 ### Running from shelf button  
 from importlib import reload  
 from solaris_utils import kitbash_convert as kc  
