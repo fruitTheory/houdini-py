@@ -5,7 +5,7 @@ from solaris_utils.ui import file_selector as fs
 from importlib import reload
 reload(fs)
 
-# Convert images to a colorspace
+# Convert images to colorspace
 class ColorConvert(fs.FileSelector):
 
     def __init__(self) -> None:

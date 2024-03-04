@@ -1,6 +1,6 @@
 import hou
 
-
+# Convert kitbash Obj to Solaris
 class KitConvert:
 
     'KB3D_CBD' 'KB3D_MTM' 'KB3D_AOE' # Example name inputs
