@@ -8,9 +8,6 @@ reload(fs)
 # Import textures from disk and convert to MaterialX network
 class TextureImport(fs.FileSelector):
 
-    files = []
-    directory = ""
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -20,21 +17,10 @@ class TextureImport(fs.FileSelector):
 
         # Add new clicked connection to button
         self.button.clicked.connect(self.convert_texture)
-
-    def import_textures(self) -> str:
         self.showui()
 
-    def handle_file_signal(self, value):
-        self.files = value
-        print(self.files)
+    def import_textures(self) -> None:
+        pass
 
-    def handle_directory_signal(self, value):
-        self.directory = value
-        print(self.directory)
-
-    def convert_texture(self):
+    def convert_texture(self) -> None:
         print('Converting..')
-
-
-
-

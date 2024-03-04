@@ -8,14 +8,56 @@ class KitConvert:
     stage = hou.node('/stage')
     obj = hou.node('/obj')
 
-    # Method to convert all avaialable kits
+    def __init__(self) -> None:
+        pass
+
+    def test(self):
+        pass
+
+    # Method to convert all avaialable kits - wip
     def convertAll(self) -> None:
+        # Simple dialog that returns user input
+        # 0 - Convert all, 1 - Convert single, 2 - Don't Convert
+        user_selection = hou.ui.readInput( message = 'For single convert input default Kitbash Geo name', initial_contents = "KB3D_AOE", buttons= ["Convert All", "Convert One", "Don't Convert"])
+
+        # If user chooses to cancel
+        if(user_selection[0] == 2):
+            return
+
         # Filter for kitbash nodes in obj - use later
         filter_kitbash_nodes = [child for child in self.obj.children() if child.name().startswith('KB3D')]
 
-        # Convert any kitbash nodes detected 
-        for kitbash_name in filter_kitbash_nodes:
-            nodes = self.convert(str(kitbash_name))                
+        kit_list_size = len(filter_kitbash_nodes)
+        # print(user_selection)
+
+        if(user_selection[0] == 0):
+            for index in range(kit_list_size):
+                filter_kitbash_nodes[index].destroyUserData('Converted')
+
+        # Loop and check if create flag already set
+        for index in range(kit_list_size):
+            if(filter_kitbash_nodes[0].userData('Converted') == 'True'):
+                # print('Already created:', filter_kitbash_nodes[0])
+                # Needs to be first index always, linear loop
+                filter_kitbash_nodes.pop(0)
+
+        # Length of list after pruning
+        kit_post_pop = len(filter_kitbash_nodes)
+
+        # Convert any kitbash nodes detected
+        if(user_selection[0] == 0):
+            for kitbash_name in filter_kitbash_nodes:
+                nodes = self.convert(str(kitbash_name))
+
+        if(user_selection[0] == 1):
+            self.convert(user_selection[1])
+
+        # Set default user data for remaining kits, a 'flag' to say if already created
+        for index in range(kit_post_pop):
+            if(kit_post_pop > 0):
+                filter_kitbash_nodes[index].setUserData('Converted', 'True')
+        
+
             
     # Convert provided kit name from Obj to Solaris
     def convert(self, name) -> tuple[str, str, str]:
@@ -126,6 +168,10 @@ class KitConvert:
         geo_name = geo_name.split(kitname + '_')[1]
 
         return geo_name
+    
+    # If using aces swap all base colors of selected node
+    def convert_to_aces() -> None:
+        pass
 
     # Delete provided nodes
     def delete_nodes(self, nodes) -> None:
