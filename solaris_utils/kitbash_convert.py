@@ -3,7 +3,7 @@ import hou
 # Convert kitbash Obj to Solaris
 class KitConvert:
 
-    'KB3D_CBD' 'KB3D_MTM' 'KB3D_AOE' # Example name inputs
+    'KB3D_CBD' 'KB3D_MTM' # Example name inputs
 
     stage = hou.node('/stage')
     obj = hou.node('/obj')

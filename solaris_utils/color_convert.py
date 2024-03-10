@@ -18,8 +18,8 @@ class ColorConvert(fs.FileSelector):
     # Look through files and search for Albedo or HDR - wip
     def file_parse(self) -> None:
         
-        num_files = len(self.files)
-        for file in self.files:
+        num_files = len(self._files)
+        for file in self._files:
             split = file.split('_')[-1]
             find = split.find('Albedo')
             if(find != -1):
@@ -27,6 +27,8 @@ class ColorConvert(fs.FileSelector):
                 self.convert_to_aces(file)
             if(file.endswith('.hdr')):
                 # print(file), print(self.directory)
+                self.convert_to_aces(file)
+            if(split.find('Translucency') != -1):
                 self.convert_to_aces(file)
 
     # Convert file to ACEScg via comp network
@@ -42,7 +44,7 @@ class ColorConvert(fs.FileSelector):
         if(ext == 'jpg'):
             file_node.setParms({'linearize':False})
 
-        filepath = os.path.join(self.directory, file)
+        filepath = os.path.join(self._directory, file)
         file_node.parm('filename1').set(filepath)
 
         # Create vopcop2gen node
@@ -79,7 +81,7 @@ class ColorConvert(fs.FileSelector):
 
         # Set ocio transforms
         if(ext == 'jpg'): 
-            ocio_transform.setParms({'fromspace':'sRGB - Texture', 'tospace':'ACEScg'})
+            ocio_transform.setParms({'fromspace':'Linear Rec.709 (sRGB)', 'tospace':'ACEScg'})
         else:
             ocio_transform.setParms({'fromspace':'Linear Rec.709 (sRGB)', 'tospace':'ACEScg'})
 

@@ -2,7 +2,7 @@ Houdini
 ---
 A repo for storing houdini scripts - currently: 
 - Kitbash  to Solaris 
-- Textures to MaterialX
+- Textures to MaterialX HDA
 - Megascans toolset
 - Colorspace converter
 
