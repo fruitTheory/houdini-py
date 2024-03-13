@@ -24,7 +24,6 @@ class TextureImport(fs.FileSelector):
         # Add new clicked connection to button
         self.button.clicked.connect(self.import_textures)
         self.showui()
-        # self.create_nodes()
         self.signal_directory
 
     # Struct for enum-ish
@@ -90,11 +89,10 @@ class TextureImport(fs.FileSelector):
         # For each keyword do an action if keyword is found in directory
         for iter in range(length):
             for file in self._files:
-                # Searching for relevant name in file
+                # Search for relevant name in file
                 keyword_found = file.find(keywords[iter])
                 # If file is found, set the correlated parm to file path and break loop
                 if(keyword_found != -1):
-                    # print('hit', file)
                     file_path = self._directory + file
                     self.selection.parm(msDict[keywords[iter]]).set(file_path)
                     break
