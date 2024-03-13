@@ -17,26 +17,27 @@ class TextureImport(fs.FileSelector):
         if(len(selection) != 1):
             raise ValueError('Select only one node')
         else:
+            # Type node
             self.selection = selection[0]
+            self.hda_name = self.selection.type().name()
 
         # Add new clicked connection to button
         self.button.clicked.connect(self.import_textures)
         self.showui()
-        self.create_nodes()
+        # self.create_nodes()
+        self.signal_directory
 
-
-    # Struct for enum-like
+    # Struct for enum-ish
     class TexId:
         Megascans = 0
         Polyhaven = 1
         Ambient_cg = 2
         Gsg = 3
-
+    
+    # Return value representing where textures are sourced from
     def get_source(self) -> int:
         # Loose ID's - megascans, polyhaven, ambient_cg, gsg
         identifiers = ('Albedo', 'arm', 'AmbientOcclusion', 'basecolor')
-
-        print(self.selection)
 
         for file in self._files:
             if(file.find(identifiers[0]) != -1):
@@ -53,7 +54,6 @@ class TextureImport(fs.FileSelector):
 
     def import_textures(self) -> None:
         texture_source = self.get_source()
-        print('source:', texture_source)
 
         if(texture_source == self.TexId.Megascans):
             self.import_megascans()
@@ -69,31 +69,52 @@ class TextureImport(fs.FileSelector):
 
 
     def import_megascans(self) -> None:
-        megascans_tex = ('Albedo', 'AO', 'Displacement', 'Normal', 
-                'Opacity', 'Roughness', 'Spec', 'Translucency')
-        # for file in self._files:
-        #     if(file.find('basecolor') != -1):
-        #         print('found')
+        ''' 
+        Search Keywords
+            ( 'Albedo', 'AO', 'Displacement', 'Normal', 
+              'Opacity', 'Roughness', 'Spec', 'Translucency' )
 
-        # print(file.find('basecolor'))
-        # fsplit = file.split('_')[-1]
-        # fsplit = fsplit.split('.')[-2]
-        # print(fsplit)
+        Parameter Names
+            (
+            'albedo_file', 'ao_file', 'normal_file', 'opacity_file',
+            'trans_file', 'disp_file', 'rough_file' )
+        '''
+        msDict = { 'Albedo':'albedo_file', 'AO':'ao_file', 'Displacement':'disp_file', 'Normal':'normal_file', 
+            'Opacity':'opacity_file', 'Roughness':'rough_file', 'Specular':'spec_file', 'Translucency':'trans_file' }
 
-        pass
+        keywords = list(msDict.keys())
+
+        # Amount of keywords - 8
+        length = len(msDict)
+
+        # For each keyword do an action if keyword is found in directory
+        for iter in range(length):
+            for file in self._files:
+                # Searching for relevant name in file
+                keyword_found = file.find(keywords[iter])
+                # If file is found, set the correlated parm to file path and break loop
+                if(keyword_found != -1):
+                    # print('hit', file)
+                    file_path = self._directory + file
+                    self.selection.parm(msDict[keywords[iter]]).set(file_path)
+                    break
+                else:
+                    # Clear param texture doesnt exist - Optional*
+                    self.selection.parm(msDict[keywords[iter]]).set('')
+
 
     def import_polyhaven(self) -> None:
-        polyhaven_tex = ('arm', 'diff', 'disp', 'normal', 'rough')
-
+        # Special snowflake embedded RGB texture will need unique HDA or setup
+        polyhaven_key = ('arm', 'diff', 'disp', 'normal', 'rough')
         pass
 
     def import_ambient_cg(self) -> None:
-        ambient_cg = ('AmbientOcclusion', 'Color', 'Displacement', 'Metalness', 'NormalGL', 'Roughness')
+        ambient_cg_key = ('AmbientOcclusion', 'Color', 'Displacement', 'Metalness', 'NormalGL', 'Roughness')
         
         pass
 
     def import_gsg(self) -> None:
-        gsg_tex = ('basecolor', 'height', 'metallic', 'normal', 'roughness')
+        gsg_key = ('basecolor', 'height', 'metallic', 'normal', 'roughness')
         
         pass
 

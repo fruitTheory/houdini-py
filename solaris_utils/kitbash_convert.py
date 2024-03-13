@@ -25,7 +25,7 @@ class KitConvert:
             return
 
         # Filter for kitbash nodes in obj - use later
-        filter_kitbash_nodes = [child for child in self.obj.children() if child.name().startswith('KB3D')]
+        filter_kitbash_nodes = [child for child in KitConvert.obj.children() if child.name().startswith('KB3D')]
 
         kit_list_size = len(filter_kitbash_nodes)
         # print(user_selection)
@@ -125,9 +125,9 @@ class KitConvert:
         geo_name = self.get_kitgeo_name(kitname)
 
         # create nodes
-        sopimport = hou.node(str(self.stage)).createNode(nodes_to_create[0], geo_name)
-        matlib = hou.node(str(self.stage)).createNode(nodes_to_create[1], node_names[1])
-        assign_mat = hou.node(str(self.stage)).createNode(nodes_to_create[2], node_names[2])
+        sopimport = hou.node(str(KitConvert.stage)).createNode(nodes_to_create[0], geo_name)
+        matlib = hou.node(str(KitConvert.stage)).createNode(nodes_to_create[1], node_names[1])
+        assign_mat = hou.node(str(KitConvert.stage)).createNode(nodes_to_create[2], node_names[2])
 
         # wire inputs
         matlib.setInput(0, sopimport)
@@ -142,14 +142,14 @@ class KitConvert:
 
         # store and layout
         created_nodes = (sopimport, matlib, assign_mat)
-        self.stage.layoutChildren(created_nodes)
+        KitConvert.stage.layoutChildren(created_nodes)
 
         return created_nodes
 
     # Returns node that contains materials for specified kitbash
     def get_kitbash_matnet(self, kitname) -> any:
         # find the matnet
-        for node in self.obj.children():
+        for node in KitConvert.obj.children():
             if node.name() == kitname:
                 kitbash_matnet = (node.node('matnet'))
 
@@ -157,7 +157,7 @@ class KitConvert:
 
     # Return string that is name of kitbash geo
     def get_kitgeo_name(self, kitname) -> str:
-        kit = self.obj.node(kitname)
+        kit = KitConvert.obj.node(kitname)
         kit_nodes = kit.children()
 
         for node in kit_nodes:
