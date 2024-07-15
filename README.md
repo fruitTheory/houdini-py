@@ -1,19 +1,14 @@
 Houdini
 ---
-A repo for storing houdini scripts - currently: 
-- Kitbash  to Solaris 
+A repo for storing houdini pipeline scripts - currently: 
+- Kitbash to Solaris 
 - Textures to MaterialX HDA
-- Megascans toolset
+- Megascan variations as variants
 - Colorspace converter
-
-### Utility 
-
-- Generalized ui Class
-- Node class wrapper
 
 ---
 
-### Running from shelf button  
+### Running from shelf example  
 from importlib import reload  
 from solaris_utils import kitbash_convert as kc  
   
@@ -23,4 +18,4 @@ kit.convertAll() or kit.convert('KB3D_AOE')
   
 ---
 ### Setup vscode
-To work with hou library intellisense in vscode, must have python extensions installed and use the hython interpreter included in the Houdini bin folder.  
+To work with hou library intellisense in vscode, install python extensions and use hython interpreter included in the Houdini package.  
