@@ -46,8 +46,11 @@ class FileSelector(QtWidgets.QWidget):
         # Emit data to instanced Signal: types are list[str] and str
         self.signal_files.emit(dir_files)
         self.signal_directory.emit(directory)
+
     except FileNotFoundError:
         print("No Files Found.")
+        self._files = ''
+        self._directory = ''
 
   # Function 
   def handle_file_signal(self, value) -> None:

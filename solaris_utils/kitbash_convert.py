@@ -18,7 +18,7 @@ class KitConvert:
     def convertAll(self) -> None:
         # Simple dialog that returns user input
         # 0 - Convert all, 1 - Convert single, 2 - Don't Convert
-        user_selection = hou.ui.readInput( message = 'For single convert input default Kitbash Geo name', initial_contents = "KB3D_AOE", buttons= ["Convert All", "Convert One", "Don't Convert"])
+        user_selection = hou.ui.readInput( message = 'For single convert input Kitbash name', initial_contents = "KB3D_AOE", buttons= ["Convert All", "Convert One", "Don't Convert"])
 
         # If user chooses to cancel
         if(user_selection[0] == 2):

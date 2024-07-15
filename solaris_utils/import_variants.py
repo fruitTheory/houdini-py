@@ -2,7 +2,7 @@ import hou
 import os
 from importlib import reload
 from solaris_utils.ui import file_selector as fs
-from solaris_utils import texture_import as tx
+from solaris_utils import import_textures as tx
 reload(tx)
 
 
@@ -16,57 +16,104 @@ class VariantImport(fs.FileSelector):
     self.button.clicked.connect(self.create_nodes)
     self.button.clicked.connect(self.import_textures)
 
-
+  # Create, setup, and wire all nodes
   def create_nodes(self) -> None:
 
-    # for file in self._files:
-    #   if(file.startswith("Var")):
-    #     # hou.node('/stage').createNode('componentgeometry', file)
-    #     print(os.listdir(self._directory+file))
+    if(len(self._files) == 0):
+      return
 
-    comp_geo = hou.node('/stage').createNode('componentgeometry', 'converter')
-    comp_geo2 = hou.node('/stage').createNode('componentgeometry', 'converter')
+    #-----Create Components------#
 
-    geo_variants = hou.node('/stage').createNode('componentgeometryvariants', 'variants')
-    geo_variants.setInput(0, comp_geo)
-    geo_variants.setInput(1, comp_geo2)
+    file_path_collect = []
+    comp_geo_collect = []
 
-    matlib = geo = hou.node('/stage').createNode('materiallibrary', 'matlib')
-    matlib.setParms({'matpathprefix':'/ASSET/materials/'})
-    self.atlas_mtl = matlib.createNode('Dpp::doublesided_mtl', 'name')
+    # Create component nodes based on varations
+    for file in self._files:
+      if(file.startswith("Var")):
+        var_name = os.listdir(self._directory+file)[0]
 
-    comp_mat = hou.node('/stage').createNode('componentmaterial', 'default')
+        # Append fbx filepath before altering var_name
+        file_path = self._directory + file + '/' + var_name
+        file_path_collect.append(file_path)
+
+        var_name = var_name.split(".")[0]
+        var_name += "_"
+        comp_geo = hou.node('/stage').createNode('componentgeometry', var_name)
+        comp_geo_collect.append(comp_geo)
+
+    #-----Create component SOP Nodes------#
+
+    # Setup Component node internals and make connections
+    for node in range(len(comp_geo_collect)):
+      # Get component name and path to its sop
+      node_name = comp_geo_collect[node].name()
+      comp_sop = hou.node("/stage/"+node_name+"/sopnet/geo")
+
+      # File
+      file_import = comp_sop.createNode('file', 'fbx_import')
+      file_import.setParms({'file':file_path_collect[node]})
+
+      # Attrib delete
+      attrib_del = comp_sop.createNode('attribdelete', 'clean')
+      attrib_del.setParms({'negate':True, 'ptdel':'N', 'vtxdel':'uv', 'primdel':'name'})
+
+      # Transform
+      xform = comp_sop.createNode('xform', 'global_scale')
+      xform.setParms({'scale':0.01})
+
+      # Polyreduce
+      polyreduce = comp_sop.createNode('polyreduce', 'reduce')
+      polyreduce.setParms({'percentage':10, 'originalpoints':True})
+      
+      # Gather
+      sop_nodes = [file_import, attrib_del, xform, polyreduce]
+
+      # Set Inputs
+      attrib_del.setInput(0, file_import)
+      xform.setInput(0, attrib_del)
+      polyreduce.setInput(0, xform)
+      # Outputs: Default - 0, Proxy - 1, SimProxy - 2
+      comp_sop.children()[0].setInput(0, xform)
+      comp_sop.children()[1].setInput(0, polyreduce)
+      comp_sop.layoutChildren(sop_nodes)
+
+    #-----Create LOP Nodes------#
+
+    # Variant input - Note: setting inputs later on
+    set_variants = hou.node('/stage').createNode('componentgeometryvariants', 'variants')
+    for node in range(len(comp_geo_collect)):
+      set_variants.setInput(node, comp_geo_collect[node])
+
+    # Get parent dir, cant start with a number
+    parent_dir = self._directory.split("/")[-2]
+    parent_dir_short = parent_dir.split("_")[1]
+
+    # Material library
+    matlib = hou.node('/stage').createNode('materiallibrary', 'matlib')
+    matlib.setParms({'matpathprefix':'/ASSET/mtl/'})
+    self.atlas_mtl = matlib.createNode('Dpp::doublesided_mtl', parent_dir_short+'_mtl')
+
+    # Component Basics
+    comp_mat = hou.node('/stage').createNode('componentmaterial', 'mtl_variant')
     comp_mat.setParms({'variantname':'default'})
-    comp_output = hou.node('/stage').createNode('componentoutput', 'test_component')
-
-    comp_mat.setInput(0, geo_variants); comp_mat.setInput(1, matlib)
+    comp_output = hou.node('/stage').createNode('componentoutput', parent_dir_short)
+    comp_output.setParms({'name':parent_dir})
+    comp_mat.setInput(0, set_variants); comp_mat.setInput(1, matlib)
     comp_output.setFirstInput(comp_mat)
 
-    # Component geo inner SOPs 
-    comp_geo_sop = hou.node("/stage/"+comp_geo.name()+"/sopnet/geo")
+    # Layout Nodes
+    lop_nodes = [set_variants, matlib, comp_mat, comp_output]
+    lop_nodes.extend(comp_geo_collect)
+    hou.node('/stage').layoutChildren(lop_nodes)
 
-    file_import = comp_geo_sop.createNode('file', 'fbx_import')
-    file_import.setParms({'file':'test.fbx'})
+    # Execute not sending textures
+    # comp_output.parm('execute').pressButton()
 
-    attrib_del = comp_geo_sop.createNode('attribdelete', 'clean')
-    attrib_del.setParms({'ptdel':'N','negate':True, 'vtxdel':'uv', 'primdel':'name'})
 
-    xform = comp_geo_sop.createNode('xform', 'global_scale')
-    xform.setParms({'scale':0.01})
-
-    polyreduce = comp_geo_sop.createNode('polyreduce', 'reduce')
-    polyreduce.setParms({'percentage':10, 'originalpoints':True})
-
-    attrib_del.setInput(0, file_import)
-    xform.setInput(0, attrib_del)
-    polyreduce.setInput(0, xform)
-
-    # Default - 0, Proxy - 1, SimProxy - 2
-    comp_geo_sop.children()[0].setInput(0, xform)
-    comp_geo_sop.children()[1].setInput(0, polyreduce)
-
-  # Call import texture to import files into mtlx HDA
+  # Call import texture to import files into material HDA
   def import_textures(self) -> None:
+    if(len(self._files) == 0):
+      return
     atlas_mtl = self.atlas_mtl
 
     try:

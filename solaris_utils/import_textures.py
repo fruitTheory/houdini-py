@@ -1,5 +1,4 @@
 import hou
-import os
 from importlib import reload
 from solaris_utils.ui import file_selector as fs
 reload(fs)
@@ -12,7 +11,7 @@ class TextureImport(fs.FileSelector):
     super().__init__(title="Texture Import")
     
     if(override == False):
-      self.select_check()
+      self.selection_check()
       self.showui()
       self.button.clicked.connect(self.import_textures)
     else:
@@ -22,7 +21,7 @@ class TextureImport(fs.FileSelector):
       self.import_textures()
 
   # Check multi-selection - extract first node
-  def select_check(self):
+  def selection_check(self):
     selection = hou.selectedNodes()
     if(len(selection) != 1):
       raise ValueError('Select only one node')
@@ -118,8 +117,6 @@ class TextureImport(fs.FileSelector):
   def run_import(self, mainDict) -> None:
 
     keywords = list(mainDict.keys())
-
-    # Amount of keywords 
     length = len(keywords)
 
     # For each keyword do an action if keyword is found in directory
