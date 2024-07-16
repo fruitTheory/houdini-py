@@ -96,19 +96,16 @@ class VariantImport(fs.FileSelector):
     # Component Basics
     comp_mat = hou.node('/stage').createNode('componentmaterial', 'mtl_variant')
     comp_mat.setParms({'variantname':'default'})
-    comp_output = hou.node('/stage').createNode('componentoutput', parent_dir_short)
-    comp_output.setParms({'name':parent_dir})
+    self.comp_output = hou.node('/stage').createNode('componentoutput', parent_dir_short)
+    self.comp_output.setParms({'name':parent_dir})
     comp_mat.setInput(0, set_variants); comp_mat.setInput(1, matlib)
-    comp_output.setFirstInput(comp_mat)
+    self.comp_output.setFirstInput(comp_mat)
 
     # Layout Nodes
-    lop_nodes = [set_variants, matlib, comp_mat, comp_output]
+    lop_nodes = [set_variants, matlib, comp_mat, self.comp_output]
     lop_nodes.extend(comp_geo_collect)
     hou.node('/stage').layoutChildren(lop_nodes)
-
-    # Execute not sending textures
-    # comp_output.parm('execute').pressButton()
-
+    
 
   # Call import texture to import files into material HDA
   def import_textures(self) -> None:
@@ -121,6 +118,7 @@ class VariantImport(fs.FileSelector):
       self._directory += "Textures/Atlas/"
       self._files = os.listdir(self._directory)
       tx.TextureImport(atlas_mtl, True, self._files, self._directory)
+      self.comp_output.parm('execute').pressButton()
 
     except AttributeError as err:
       print("Error:", err)
